@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: payment
+  namespace: airbnb
+  labels:
+    app: payment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment
+  template:
+    metadata:
+      labels:
+        app: payment
+    spec:
+      containers:
+        - name: payment
+          image: 985702435631.dkr.ecr.ap-northeast-2.amazonaws.com/payment:latest
+          ports:
+            - containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 25
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: '/actuator/health'
+              port: 8080
+            initialDelaySeconds: 60
+            timeoutSeconds: 2
+            periodSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
